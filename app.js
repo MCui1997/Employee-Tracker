@@ -55,6 +55,11 @@ function init() {
             console.log("Employees viewed by department!\n");
             break; 
 
+            case "View All Employees by Manager":
+            viewEmployeeManager();
+            console.log("Employees viewed by department!\n");
+            break; 
+
             case "End":
             console.log("Program Ended");
             connection.end();
@@ -93,11 +98,13 @@ function viewEmployeeDepartment() {
   var query =
   `SELECT d.id AS department_id, d.name AS department, e.first_name, e.last_name
   FROM employee e
-  LEFT JOIN role r 
+  LEFT JOIN role r
     ON e.role_id = r.id
   LEFT JOIN department d
     ON d.id = r.department_id
-  GROUP BY d.id,d.name`
+  LEFT JOIN employee m
+    ON m.id = e.manager_id
+  ORDER BY d.id`
 
 
   connection.query(query, function (err, res) {
@@ -108,6 +115,30 @@ function viewEmployeeDepartment() {
     
   });
 }
+
+  // Function to view the employees by manager ================================================
+  function viewEmployeeManager() {
+
+    var query =
+    `SELECT e.manager_id, m.first_name AS manager_first, m.last_name AS manager_last, e.first_name, e.last_name
+    FROM employee e
+    LEFT JOIN role r
+      ON e.role_id = r.id
+    LEFT JOIN department d
+      ON d.id = r.department_id
+    LEFT JOIN employee m
+      ON m.id = e.manager_id
+    ORDER BY e.manager_id`
+  
+    connection.query(query, function (err, res) {
+      if (err) throw err;
+  
+      console.table(res);  
+      init(); 
+      
+    });
+  }
+  
 
 
 
