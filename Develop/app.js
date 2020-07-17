@@ -149,29 +149,21 @@ function viewEmployeeDepartment() {
   }
   
 
-  //function to add employees====================================================
+  //function to add employees ======================================================
   function addEmployee() {
- 
+
     var query =
-      `SELECT r.id, r.title, r.salary 
-        FROM role r`
-  
-    connection.query(query, function (err, res) {
-      if (err) throw err;
-  
-      const roleChoices = res.map(({ id, title, salary }) => ({
-        value: id, title: `${title}`, salary: `${salary}`
-      }));
-  
-      console.table(res);
-      console.log("RoleToInsert!");
-  
-      promptInsert(roleChoices);
-    });
-  }
-  
-  function promptInsert(roleChoices) {
-  
+    `SELECT r.id, r.title, r.salary 
+      FROM role r`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const roleChoices = res.map(({ id, title, salary }) => ({
+      value: id + ` ${title}`, title: `${title}`, salary: `${salary}`
+    }));
+
+
     inquirer
       .prompt([
         {
@@ -186,40 +178,33 @@ function viewEmployeeDepartment() {
         },
         {
           type: "list",
-          name: "roleId",
+          name: "roleID",
           message: "What is the employee's role?",
           choices: roleChoices
         },
-        // {
-        //   name: "manager_id",
-        //   type: "list",
-        //   message: "What is the employee's manager_id?",
-        //   choices: manager
-        // }
       ])
-      .then(function (answer) {
-        console.log(answer);
+      .then(function (response) {
   
         var query = `INSERT INTO employee SET ?`
         // when finished prompting, insert a new item into the db with that info
         connection.query(query,
           {
-            first_name: answer.first_name,
-            last_name: answer.last_name,
-            role_id: answer.roleId,
-            manager_id: answer.managerId,
+            first_name: response.first_name,
+            last_name: response.last_name,
+            role_id : parseInt(response.roleID)
           },
           function (err, res) {
             if (err) throw err;
-  
-            console.table(res);
-            console.log(res.insertedRows + "Inserted successfully!\n");
-  
+
             init();
           });
     
       });
-  }
+
+    });
+
+   
+    }
 
   //Call init function at start
   init();
