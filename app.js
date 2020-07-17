@@ -23,11 +23,49 @@ connection.connect(function(err) {
   if (err) throw err;
 });
 
+//Prompting the user with inquirer=======================================================
+function init() {
+
+    inquirer
+      .prompt({
+        type: "list",
+        name: "selection",
+        message: "What would you like to do?",
+        choices: [
+          "View All Employees",
+          "View All Employees by Department",
+          "View All Employees by Manager",
+          "Add Employee",
+          "Remove Employees",
+          "Update Employee Role",
+          "Add Role",
+          "End"]
+      })
+      .then(function ({selection}){
+
+        switch (selection){
+
+            case "View All Employees":
+            viewEmployee();
+            console.log("Employees viewed!\n");
+            break; 
+
+            case "View All Employees by Department":
+            viewEmployeeDepartment();
+            console.log("Employees viewed by department!\n");
+            break; 
+
+            case "End":
+            console.log("Program Ended");
+            connection.end();
+            break;
+        }
+      })
+
+      }
 
 
-
-
-// Function to view the employees================================================
+// Function to view the employees ================================================
 function viewEmployee() {
 
     var query =
@@ -36,7 +74,7 @@ function viewEmployee() {
     LEFT JOIN role r
       ON e.role_id = r.id
     LEFT JOIN department d
-    ON d.id = r.department_id
+      ON d.id = r.department_id
     LEFT JOIN employee m
       ON m.id = e.manager_id`
   
@@ -44,11 +82,35 @@ function viewEmployee() {
       if (err) throw err;
   
       console.table(res);  
+      init(); 
       
     });
   }
 
+  // Function to view the employees by department ================================================
+function viewEmployeeDepartment() {
 
-  viewEmployee();
-  connection.end();
+  var query =
+  `SELECT d.id AS department_id, d.name AS department, e.first_name, e.last_name
+  FROM employee e
+  LEFT JOIN role r 
+    ON e.role_id = r.id
+  LEFT JOIN department d
+    ON d.id = r.department_id
+  GROUP BY d.id,d.name`
+
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    console.table(res);  
+    init(); 
+    
+  });
+}
+
+
+
+  //Call init function at start
+  init();
 
