@@ -38,6 +38,7 @@ function init() {
           "Add Employee",
           "Remove Employees",
           "Add Roles",
+          "Add Department",
           "Update Employee Role",
           "End"]
       })
@@ -72,6 +73,9 @@ function init() {
             addRole();
             break;
   
+            case "Add Department":
+            addDepartment();
+            break;
 
             case "End":
             console.log("Program Ended");
@@ -276,6 +280,20 @@ function removeEmployees() {
 //function to add a new role=======================================================
 function addRole(){
 
+  
+
+  var query1 = `SELECT d.id, d.name
+                  FROM department d`
+  
+  connection.query(query1,function(err,res){
+
+    if (err) throw err;
+
+    const deptChoices = res.map(({ id, name }) => ({
+      value: id + name, name: `${name}`
+
+  }))
+
 
   inquirer
   .prompt([
@@ -290,9 +308,10 @@ function addRole(){
       name: "salaryRole"
     },
     {
-      type: "input",
-      message: "Please enter department ID for this role",
-      name: "departmentID"
+      type: "list",
+      message: "Please select Department for this role.",
+      name: "departmentID",
+      choices: deptChoices
 
     }
   ])
@@ -306,7 +325,42 @@ function addRole(){
       {
         title: response.role,
         salary: response.salaryRole,
-        department_id: response.departmentID
+        department_id: parseInt(response.departmentID)
+      },
+      
+      
+      function (err, res) {
+      if (err) throw err;
+      init();
+    });
+  })
+  })
+}
+    
+
+
+
+//function to add a new department =======================================================
+function addDepartment(){
+
+
+  inquirer
+  .prompt([
+    {
+      type: "input",
+      message: "Please enter the name of the new department.",
+      name: "department"
+    }
+  ])
+  .then(function(response){
+
+    var query = `INSERT INTO department SET ?`
+                
+
+    connection.query(query, 
+
+      {
+        name: response.department
       },
       
       
