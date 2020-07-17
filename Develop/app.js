@@ -64,8 +64,8 @@ function init() {
             addEmployee();
             break; 
 
-            case "Remove Employee":
-            
+            case "Remove Employees":
+            removeEmployees();
             break; 
   
 
@@ -230,6 +230,43 @@ function viewEmployeeDepartment() {
 }
 
 //function to delete employees =======================================================
+
+function removeEmployees() {
+
+  var query =
+    `SELECT e.id, e.first_name, e.last_name
+      FROM employee e`
+
+  connection.query(query, function (err, res) {
+    if (err) throw err;
+
+    const deleteEmployeeChoices = res.map(({ id, first_name, last_name }) => ({
+      value: id, name: `${id} ${first_name} ${last_name}`
+    }));
+
+
+    inquirer
+    .prompt([
+
+      {
+        type: "list",
+        name: "employeeID",
+        message: "Select employee to delete.",
+        choices: deleteEmployeeChoices
+
+      }
+    ])
+    .then(function(response){
+
+      var query = `DELETE FROM employee WHERE ?`;
+      connection.query(query, { id: response.employeeID }, function (err, res) {
+        if (err) throw err;
+
+        init();
+    })
+  })
+})
+}
    
     
 
