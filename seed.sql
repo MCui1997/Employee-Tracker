@@ -15,6 +15,6 @@ VALUES ("Software Engineer", 120000, 1);
 
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
-VALUES ("Michael", "Cui", 1, 3);
+VALUES ("Michael", "Cui", 1, 1);
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES ("Jackie", "Chan", 2, 1);
