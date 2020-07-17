@@ -37,8 +37,8 @@ function init() {
           "View All Employees by Manager",
           "Add Employee",
           "Remove Employees",
+          "Add Roles",
           "Update Employee Role",
-          "Add Role",
           "End"]
       })
       .then(function ({selection}){
@@ -67,6 +67,10 @@ function init() {
             case "Remove Employees":
             removeEmployees();
             break; 
+
+            case "Add Roles":
+            addRole();
+            break;
   
 
             case "End":
@@ -85,8 +89,8 @@ function viewEmployee() {
     var query =
       `SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, CONCAT(m.first_name, ' ', m.last_name) AS manager
     FROM employee e
-    LEFT JOIN role r
-      ON e.role_id = r.id
+    LEFT JOIN roles r
+      ON e.roles_id = r.id
     LEFT JOIN department d
       ON d.id = r.department_id
     LEFT JOIN employee m
@@ -107,8 +111,8 @@ function viewEmployeeDepartment() {
   var query =
   `SELECT d.id AS department_id, d.name AS department, e.first_name, e.last_name
   FROM employee e
-  LEFT JOIN role r
-    ON e.role_id = r.id
+  LEFT JOIN roles r
+    ON e.roles_id = r.id
   LEFT JOIN department d
     ON d.id = r.department_id
   LEFT JOIN employee m
@@ -131,8 +135,8 @@ function viewEmployeeDepartment() {
     var query =
     `SELECT e.manager_id, m.first_name AS manager_first, m.last_name AS manager_last, e.first_name, e.last_name
     FROM employee e
-    LEFT JOIN role r
-      ON e.role_id = r.id
+    LEFT JOIN roles r
+      ON e.roles_id = r.id
     LEFT JOIN department d
       ON d.id = r.department_id
     LEFT JOIN employee m
@@ -155,13 +159,13 @@ function viewEmployeeDepartment() {
     //First query to get role info
     var query =
     `SELECT r.id, r.title, r.salary
-      FROM role r`
+      FROM roles r`
   
-    var query2 = `SELECT e.first_name, e.last_name, e.role_id 
+    var query2 = `SELECT e.first_name, e.last_name, e.roles_id 
       FROM employee e`
       
 
-      //First query for role
+      //First query for roles
   connection.query(query, function (err, res) {
     if (err) throw err;
 
@@ -174,8 +178,8 @@ function viewEmployeeDepartment() {
 
     if (err) throw err;
 
-    const managerChoices = res.map(({ first_name, last_name, role_id }) => ({
-      value: role_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
+    const managerChoices = res.map(({ first_name, last_name, roles_id }) => ({
+      value: roles_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
     }));
 
   
@@ -194,7 +198,7 @@ function viewEmployeeDepartment() {
         },
         {
           type: "list",
-          name: "roleID",
+          name: "rolesID",
           message: "What is the employee's role?",
           choices: roleChoices
         },
@@ -214,7 +218,7 @@ function viewEmployeeDepartment() {
           {
             first_name: response.first_name,
             last_name: response.last_name,
-            role_id : parseInt(response.roleID),
+            roles_id : parseInt(response.rolesID),
             manager_id : parseInt(response.managerID)
           },
           function (err, res) {
@@ -268,6 +272,50 @@ function removeEmployees() {
 })
 }
    
+
+//function to add a new role=======================================================
+function addRole(){
+
+
+  inquirer
+  .prompt([
+    {
+      type: "input",
+      message: "Please enter the name of the role.",
+      name: "role"
+    },
+    {
+      type: "input",
+      message: "Please enter salary for this role",
+      name: "salaryRole"
+    },
+    {
+      type: "input",
+      message: "Please enter department ID for this role",
+      name: "departmentID"
+
+    }
+  ])
+  .then(function(response){
+
+    var query = `INSERT INTO roles SET ?`
+                
+
+    connection.query(query, 
+
+      {
+        title: response.role,
+        salary: response.salaryRole,
+        department_id: response.departmentID
+      },
+      
+      
+      function (err, res) {
+      if (err) throw err;
+      init();
+    });
+  })
+}
     
 
   //Call init function at start
