@@ -152,10 +152,16 @@ function viewEmployeeDepartment() {
   //function to add employees ======================================================
   function addEmployee() {
 
+    //First query to get role info
     var query =
-    `SELECT r.id, r.title, r.salary 
+    `SELECT r.id, r.title, r.salary
       FROM role r`
+  
+    var query2 = `SELECT e.first_name, e.last_name, e.role_id 
+      FROM employee e`
+      
 
+      //First query for role
   connection.query(query, function (err, res) {
     if (err) throw err;
 
@@ -163,6 +169,16 @@ function viewEmployeeDepartment() {
       value: id + ` ${title}`, title: `${title}`, salary: `${salary}`
     }));
 
+    //Second query for manager id
+  connection.query(query2,function(err,res){
+
+    if (err) throw err;
+
+    const managerChoices = res.map(({ first_name, last_name, role_id }) => ({
+      value: role_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
+    }));
+
+  
 
     inquirer
       .prompt([
@@ -182,6 +198,13 @@ function viewEmployeeDepartment() {
           message: "What is the employee's role?",
           choices: roleChoices
         },
+        {
+          type: "list",
+          name: "managerID",
+          message: "Who is this employee's manager?",
+          choices: managerChoices
+
+        }
       ])
       .then(function (response) {
   
@@ -191,7 +214,8 @@ function viewEmployeeDepartment() {
           {
             first_name: response.first_name,
             last_name: response.last_name,
-            role_id : parseInt(response.roleID)
+            role_id : parseInt(response.roleID),
+            manager_id : parseInt(response.managerID)
           },
           function (err, res) {
             if (err) throw err;
@@ -199,12 +223,15 @@ function viewEmployeeDepartment() {
             init();
           });
     
-      });
+      })
+    })
+  });
 
-    });
+}
 
+//function to delete employees =======================================================
    
-    }
+    
 
   //Call init function at start
   init();
