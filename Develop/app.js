@@ -77,6 +77,10 @@ function init() {
             addDepartment();
             break;
 
+            case "Update Employee Role":
+            updateRole();
+            break;
+
             case "End":
             console.log("Program Ended");
             connection.end();
@@ -371,7 +375,67 @@ function addDepartment(){
   })
 }
     
+// UPDATE role ==================================================================================
+function updateRole(){
 
+  var query = 
+  `SELECT e.roles_id, e.first_name, e.last_name, r.title, r.id, r.salary
+   FROM employee e
+   LEFT JOIN roles r
+   ON e.roles_id = r.id`
+
+
+   connection.query(query,function(err,res){
+
+    if (err) throw err;
+
+    const employeeChoices = res.map(({ first_name, last_name, roles_id }) => ({
+      value: roles_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
+  
+
+  }))
+
+  const roleChoices = res.map(({ id, title, salary }) => ({
+    value: id + ` ${title}`, title: `${title}`, salary: `${salary}`
+  }));
+
+  inquirer
+  .prompt([
+    {
+      type: "list",
+      message: "Please select the employee to update.",
+      name: "employee",
+      choices: employeeChoices
+
+    },
+    {
+      type: "list",
+      message: "What role should they have?",
+      name: "newRole",
+      choices: roleChoices 
+    }
+  ])
+  .then(function(response){
+
+    var query3 = "UPDATE employee SET ?"
+
+    connection.query(query3, 
+
+      {
+        roles_id: parseInt(response.newRole)
+      },
+      
+      
+      function (err, res) {
+      if (err) throw err;
+      init();
+
+      });
+
+  })
+})
+
+}
   //Call init function at start
   init();
 
