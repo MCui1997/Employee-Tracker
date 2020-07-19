@@ -27,9 +27,13 @@ So that I can organize and plan my business
 ## Screenshots + Instructions
 
 1. Git clone repo to device and run schema.sql and seed.sql in MySQL Workbench
+![Alt text](/screenshots/first.png "Main")
 
 2. Open develop in terminal and run `npm install` and then run `npm start`.
+![Alt text](/screenshots/second.png "Main")
 
 3. Select different tasks and answer prompts
+![Alt text](/screenshots/third.png "Main")
 
 4. End program
+![Alt text](/screenshots/last.png "Main")
