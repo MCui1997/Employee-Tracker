@@ -169,7 +169,7 @@ function viewEmployeeDepartment() {
     `SELECT r.id, r.title, r.salary
       FROM roles r`
   
-    var query2 = `SELECT e.first_name, e.last_name, e.roles_id 
+    var query2 = `SELECT e.first_name, e.last_name, e.id
       FROM employee e`
       
 
@@ -186,8 +186,8 @@ function viewEmployeeDepartment() {
 
     if (err) throw err;
 
-    const managerChoices = res.map(({ first_name, last_name, roles_id }) => ({
-      value: roles_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
+    const managerChoices = res.map(({ id, first_name, last_name }) => ({
+      value: id + ` ${first_name} ` + `${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
     }));
 
   
