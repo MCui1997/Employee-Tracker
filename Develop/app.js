@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
   user: "root",
 
   // Your password
-  password: "bangbangboomboombus",
+  password: "",
   database: "employeeTrackerDB"
 });
 
@@ -117,7 +117,7 @@ function viewEmployee() {
 function viewEmployeeDepartment() {
 
   var query =
-  `SELECT d.id AS department_id, d.name AS department, e.first_name, e.last_name
+  `SELECT d.id AS department_id, d.name AS department, e.first_name, e.last_name, r.salary
   FROM employee e
   LEFT JOIN roles r
     ON e.roles_id = r.id
@@ -378,33 +378,47 @@ function addDepartment(){
 // UPDATE role ==================================================================================
 function updateRole(){
 
+
+
   var query = 
-  `SELECT e.roles_id, e.first_name, e.last_name, r.title, r.id, r.salary
-   FROM employee e
-   LEFT JOIN roles r
-   ON e.roles_id = r.id`
+  `SELECT e.roles_id, e.first_name, e.last_name, e.id
+   FROM employee e`
 
 
    connection.query(query,function(err,res){
 
+    
+
     if (err) throw err;
 
-    const employeeChoices = res.map(({ first_name, last_name, roles_id }) => ({
-      value: roles_id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`
+    const employeeChoices = res.map(({ first_name, last_name, id }) => ({
+      value: id + ` ${first_name}` + ` ${last_name}`, first_name: `${first_name}`, last_name: `${last_name}`,
+      
   
 
   }))
 
-  const roleChoices = res.map(({ id, title, salary }) => ({
-    value: id + ` ${title}`, title: `${title}`, salary: `${salary}`
-  }));
+  var query2 = `SELECT r.id, r.title
+                FROM roles r`
+
+    connection.query(query2,function(err,res){
+
+      if (err) throw err;
+
+      const roleChoices = res.map(({ id, title }) => ({
+        value: id + ` ${title}`, title: `${title}`
+      }));
+
+
+    
+
 
   inquirer
   .prompt([
     {
       type: "list",
       message: "Please select the employee to update.",
-      name: "employee",
+      name: "name",
       choices: employeeChoices
 
     },
@@ -417,25 +431,22 @@ function updateRole(){
   ])
   .then(function(response){
 
-    var query3 = "UPDATE employee SET ?"
-
-    connection.query(query3, 
-
-      {
-        roles_id: parseInt(response.newRole)
-      },
+    connection.query(`UPDATE employee SET roles_id = ? WHERE employee.id =?`, [parseInt(response.newRole) ,parseInt(response.name)], function (err, data) {
+    
+   
+  })
       
       
-      function (err, res) {
-      if (err) throw err;
       init();
 
       });
+    
 
   })
 })
-
 }
+
+
   //Call init function at start
   init();
 
