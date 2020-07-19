@@ -22,9 +22,9 @@ I want to be able to view and manage the departments, roles, and employees in my
 So that I can organize and plan my business
 ```
 
-## Links
-
 ## Screenshots + Instructions
+
+Very Important: Make sure to add your MySQL password to `app.js` section where `password = ""`.
 
 1. Git clone repo to device and run schema.sql and seed.sql in MySQL Workbench
 ![Alt text](/screenshots/first.png "Main")
